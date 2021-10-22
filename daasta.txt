@@ -1,0 +1,49 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+with open('settings.txt','r') as settings:
+    tmp=[float(i) for i in settings.read().split('\n')]
+    shag_volt=tmp[0]
+    shag_time=tmp[1]
+
+data_array=np.loadtxt('data.txt',dtype=float)
+data_array*=shag_volt
+
+
+fig,ax=plt.subplots(figsize=(16,10),dpi=400)
+endtime=(len(data_array)+1)*shag_time
+
+data_time=[]
+for i in range(len(data_array)):
+    data_time.append(shag_time*i)
+
+for i in range(len(data_array)-1):
+    if data_array[i]!=max(data_array):
+        continue
+    else:
+        tzar=data_time[i]
+        break
+trazr=data_time[len(data_time)-1]-tzar
+
+ax.plot(data_time,data_array,label='U(t)',markevery=25,marker='.')
+
+ax.set_xlabel('Время (с)',fontsize=10,color='red')
+ax.set_ylabel('напряжение на конденсаторе (В)',fontsize=8,color='red')
+ax.set_title('Процесс заряда и разряда конденсатора в RC-цепочке',fontsize=7,color='black')
+
+ax.legend()
+ax.set_xlim([0,10])
+ax.set_ylim([0,4])
+
+ax.grid(which='major',color='k')
+ax.minorticks_on()
+ax.grid(which='minor',color='gray',linestyle='-')
+
+
+tzar1='Время зарядки: '+str(tzar)
+trazr1='Время разрядки: '+str(round(trazr,4))
+ax.text(6,3,tzar1,fontsize=7,color='orange')
+ax.text(6,2.5,trazr1,fontsize=7,color='orange')
+
+fig.savefig('График.svg')
+plt.show()
